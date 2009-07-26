@@ -110,7 +110,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files common
 %defattr(-,root,root)
-%config(noreplace) %attr(0755,-,-) %{_sysconfdir}/sysconfig/network-scripts/ifup-dns
+%config(noreplace) %attr(0755,root,root) %{_sysconfdir}/sysconfig/network-scripts/ifup-dns
 
 %files server
 %defattr(-,root,root)
