@@ -16,7 +16,7 @@ Source3: 	iodined.init
 Source4: 	iodined.conf
 # sent upstream : http://dev.kryo.se/iodine/ticket/70
 Patch0:     iodine-0.5.2-pidfile.diff
-
+BuildRequires: zlib-devel
 BuildRoot:	%{_tmppath}/%{name}-root
 
 %description
