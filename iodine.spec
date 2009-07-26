@@ -14,11 +14,37 @@ Source1: 	iodine.init
 Source2: 	iodine.conf
 Source3: 	iodined.init
 Source4: 	iodined.conf
+# sent upstream : http://dev.kryo.se/iodine/ticket/70
 Patch0:     iodine-0.5.2-pidfile.diff
 
 BuildRoot:	%{_tmppath}/%{name}-root
 
 %description
+odine lets you tunnel IPv4 data through a DNS server. This can be usable in 
+different situations where internet access is firewalled, but DNS queries 
+are allowed.
+
+The bandwidth is asymmetrical with limited upstream and up to 1 Mbit/s 
+downstream.
+
+Compared to other DNS tunnel implementations, iodine offers:
+
+ * Higher performance
+    iodine uses the NULL type that allows the downstream data to be sent 
+    without encoding. Each DNS reply can contain over a kilobyte of compressed 
+    payload data.
+ * Portability
+    iodine runs on many different UNIX-like systems as well as on Win32. 
+    Tunnels can be set up between two hosts no matter their endianness or 
+    operating system.
+ * Security
+    iodine uses challenge-response login secured by MD5 hash. It also 
+    filters out any packets not coming from the IP used when logging in.
+ * Less setup
+    iodine handles setting IP number on interfaces automatically, and up 
+    to 16 users can share one server at the same time. Packet size is 
+    automatically probed for maximum downstream throughput. 
+
 
 %package	client
 Summary:	Iodine client (Tunnel IP over DNS)
