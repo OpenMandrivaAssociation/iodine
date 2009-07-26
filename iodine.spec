@@ -23,6 +23,7 @@ BuildRoot:	%{_tmppath}/%{name}-root
 %package	client
 Summary:	Iodine client (Tunnel IP over DNS)
 Group:		Networking/Other
+Requires:   %{name}-common
 
 %description	client
 iodine lets you tunnel IPv4 data through a DNS server. This can be usable in 
@@ -34,6 +35,7 @@ This package contains the client part.
 %package	server
 Summary:	Iodine server (Tunnel IP over DNS)
 Group:		Networking/Other
+Requires:   %{name}-common
 
 %description	server
 iodine lets you tunnel IPv4 data through a DNS server. This can be usable in 
@@ -42,6 +44,19 @@ are allowed.
 
 
 This package contains the server part.
+
+%package	common
+Summary:	Iodine common part (Tunnel IP over DNS)
+Group:		Networking/Other
+
+%description    common
+iodine lets you tunnel IPv4 data through a DNS server. This can be usable in 
+different situations where internet access is firewalled, but DNS queries 
+are allowed. 
+
+
+This package contains some script shared between server and client.
+
 
 %prep
 %setup -q 
@@ -68,11 +83,19 @@ echo -e '#!/bin/bash\nexit 0\n' > $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%pre server
+%_pre_useradd %{name}d /var/empty /bin/bash
+
 %post server
 %_post_service %{name}d
 
 %preun server
 %_preun_service %{name}d
+
+%postun server
+%_postun_userdel %{name}d
+
+
 %pre client
 %_pre_useradd %{name} /var/empty /bin/bash
 
@@ -84,6 +107,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun client
 %_postun_userdel %{name}
+
+%files common
+%defattr(-,root,root)
+%config(noreplace) %attr(0755,-,-) %{_sysconfdir}/sysconfig/network-scripts/ifup-dns
 
 %files server
 %defattr(-,root,root)
@@ -98,6 +125,5 @@ rm -rf $RPM_BUILD_ROOT
 %{_sbindir}/%{name}
 %{_initrddir}/%{name}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%config(noreplace) %attr(0755,-,-) %{_sysconfdir}/sysconfig/network-scripts/ifup-dns
 %_mandir/man8/%{name}.*
 
