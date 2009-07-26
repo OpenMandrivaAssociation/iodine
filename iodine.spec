@@ -14,6 +14,8 @@ Source1: 	iodine.init
 Source2: 	iodine.conf
 Source3: 	iodined.init
 Source4: 	iodined.conf
+Patch0:     iodine-0.5.2-pidfile.diff
+
 BuildRoot:	%{_tmppath}/%{name}-root
 
 %description
@@ -43,6 +45,7 @@ This package contains the server part.
 
 %prep
 %setup -q 
+%patch0 -p0
 
 %build
 %make
@@ -58,6 +61,10 @@ install -m 0755 %SOURCE2 $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/%{name}
 install -m 0755 %SOURCE3 $RPM_BUILD_ROOT/%_initrddir/%{name}d
 install -m 0755 %SOURCE4 $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/%{name}d
 
+# this is a hack so we can bypass ifplugd that try to run dhcp on the 
+# newly created interface
+mkdir -p $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network-scripts
+echo -e '#!/bin/bash\nexit 0\n' > $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network-scripts/ifup-dns
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -66,12 +73,17 @@ rm -rf $RPM_BUILD_ROOT
 
 %preun server
 %_preun_service %{name}d
+%pre client
+%_pre_useradd %{name} /var/empty /bin/bash
 
 %post client
 %_post_service %{name}
 
 %preun client
 %_preun_service %{name}
+
+%postun client
+%_postun_userdel %{name}
 
 %files server
 %defattr(-,root,root)
@@ -86,5 +98,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_sbindir}/%{name}
 %{_initrddir}/%{name}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %attr(0755,-,-) %{_sysconfdir}/sysconfig/network-scripts/ifup-dns
 %_mandir/man8/%{name}.*
 
