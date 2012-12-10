@@ -153,3 +153,30 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %_mandir/man8/%{name}.*
 
+
+
+%changelog
+* Fri Dec 10 2010 Oden Eriksson <oeriksson@mandriva.com> 0.5.2-2mdv2011.0
++ Revision: 619669
+- the mass rebuild of 2010.0 packages
+
+  + Michael Scherer <misc@mandriva.org>
+    - more rpmlint fix on initscript
+    - fix rpmlint warning about initscript
+
+* Sun Jul 26 2009 Michael Scherer <misc@mandriva.org> 0.5.2-1mdv2010.0
++ Revision: 400340
+- add missing BuildRequires
+- add a mention of upstream bug for the patch
+- add a description, taken from upstream
+- fix wrong ownership
+- fix various problem seen while testing iodined
+- split common script in a subpackage to avoid duplication
+- add iodined init script and config file
+- add the pidfile option to the server, and fix the indentation of the patch for upstream submission
+- add a initscript for the client, and patch iodine to store the pid in a file
+- disable ifplugd and dhclient by adding my own handler for dnX interface, as the
+  ip address is set by iodine, not by dhcp or stuff like that.
+- import iodine
+
+

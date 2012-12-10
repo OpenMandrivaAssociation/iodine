@@ -1,6 +1,2 @@
 sources:
-  "iodine-0.5.2.tar.gz:"	28d0d00e513e20aa7fdfcc61872dee0ec032f112
-  "iodine.conf:"	e72b5b8c3202dbb4f97da207f083d71560ce671f
-  "iodined.conf:"	ca8c3fcb8515bfe6d5cbf80a0edb3f5acaefe726
-  "iodined.init:"	fd08ffb662be7f85346a8d8816b713e9e34feb82
-  "iodine.init:"	9b41f35796dcc4ca517536bf7572098e3d138df3
+  "iodine-0.5.2.tar.gz": 28d0d00e513e20aa7fdfcc61872dee0ec032f112
