@@ -1,23 +1,23 @@
-%define name	iodine
-%define version	0.5.2
-%define release	%mkrel 2
+# define to %{nil} for release builds
+%define beta rc1
 
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
+Name:		iodine
+Version:	0.6.0
+%if "%beta" != ""
+Release:	0.%{beta}.1
+%else
+Release:	1
+%endif
 Summary:	Tunnel IP over DNS NULL request 
 Group:		Networking/Other
 License:	BSD
 URL:		http://code.kryo.se/iodine/
-Source0:	%{name}-%{version}.tar.gz
+Source0:	http://code.kryo.se/iodine/%{name}-%{version}%{?beta:-}%{beta}.tar.gz
 Source1: 	iodine.init
 Source2: 	iodine.conf
 Source3: 	iodined.init
 Source4: 	iodined.conf
-# sent upstream : http://dev.kryo.se/iodine/ticket/70
-Patch0:     iodine-0.5.2-pidfile.diff
 BuildRequires: zlib-devel
-BuildRoot:	%{_tmppath}/%{name}-root
 
 %description
 odine lets you tunnel IPv4 data through a DNS server. This can be usable in 
@@ -85,16 +85,15 @@ This package contains some script shared between server and client.
 
 
 %prep
-%setup -q 
-%patch0 -p0
+%setup -qn %{name}-%{version}%{?beta:-}%{beta}
+%apply_patches
 
 %build
-%make
+%make prefix=%{_prefix}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%makeinstall
+%makeinstall_std prefix=%{_prefix}
 mkdir -p $RPM_BUILD_ROOT/%_initrddir/
 mkdir -p $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/
 install -m 0755 %SOURCE1 $RPM_BUILD_ROOT/%_initrddir/%{name}
@@ -106,11 +105,9 @@ install -m 0755 %SOURCE4 $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/%{name}d
 # newly created interface
 mkdir -p $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network-scripts
 echo -e '#!/bin/bash\nexit 0\n' > $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network-scripts/ifup-dns
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %pre server
-%_pre_useradd %{name}d /var/empty /bin/bash
+%_pre_useradd %{name}d /var/empty /sbin/nologin
 
 %post server
 %_post_service %{name}d
@@ -123,7 +120,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %pre client
-%_pre_useradd %{name} /var/empty /bin/bash
+%_pre_useradd %{name} /var/empty /sbin/nologin
 
 %post client
 %_post_service %{name}
@@ -152,31 +149,3 @@ rm -rf $RPM_BUILD_ROOT
 %{_initrddir}/%{name}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %_mandir/man8/%{name}.*
-
-
-
-%changelog
-* Fri Dec 10 2010 Oden Eriksson <oeriksson@mandriva.com> 0.5.2-2mdv2011.0
-+ Revision: 619669
-- the mass rebuild of 2010.0 packages
-
-  + Michael Scherer <misc@mandriva.org>
-    - more rpmlint fix on initscript
-    - fix rpmlint warning about initscript
-
-* Sun Jul 26 2009 Michael Scherer <misc@mandriva.org> 0.5.2-1mdv2010.0
-+ Revision: 400340
-- add missing BuildRequires
-- add a mention of upstream bug for the patch
-- add a description, taken from upstream
-- fix wrong ownership
-- fix various problem seen while testing iodined
-- split common script in a subpackage to avoid duplication
-- add iodined init script and config file
-- add the pidfile option to the server, and fix the indentation of the patch for upstream submission
-- add a initscript for the client, and patch iodine to store the pid in a file
-- disable ifplugd and dhclient by adding my own handler for dnX interface, as the
-  ip address is set by iodine, not by dhcp or stuff like that.
-- import iodine
-
-
