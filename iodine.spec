@@ -8,7 +8,7 @@ Release:        0.%{beta}.1
 %else
 Release:        1
 %endif
-Summary:        Tunnel IP over DNS NULL request.
+Summary:        Tunnel IP over DNS NULL request
 Group:          Networking/Other
 License:        BSD
 URL:            http://code.kryo.se/iodine/
