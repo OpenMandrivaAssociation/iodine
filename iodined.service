@@ -1,0 +1,10 @@
+[Unit]
+Description=Iodine Server
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/iodined
+ExecStart=/usr/sbin/iodined
+
+[Install]
+WantedBy=multi-user.target

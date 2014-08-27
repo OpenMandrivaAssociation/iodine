@@ -1,22 +1,22 @@
 # define to %{nil} for release builds
 %define beta rc1
 
-Name:		iodine
-Version:	0.6.0
+Name:           iodine
+Version:        0.6.0
 %if "%beta" != ""
-Release:	0.%{beta}.1
+Release:        0.%{beta}.1
 %else
-Release:	1
+Release:        1
 %endif
-Summary:	Tunnel IP over DNS NULL request 
-Group:		Networking/Other
-License:	BSD
-URL:		http://code.kryo.se/iodine/
-Source0:	http://code.kryo.se/iodine/%{name}-%{version}%{?beta:-}%{beta}.tar.gz
-Source1: 	iodine.init
-Source2: 	iodine.conf
-Source3: 	iodined.init
-Source4: 	iodined.conf
+Summary:        Tunnel IP over DNS NULL request.
+Group:          Networking/Other
+License:        BSD
+URL:            http://code.kryo.se/iodine/
+Source0:        http://code.kryo.se/iodine/%{name}-%{version}%{?beta:-}%{beta}.tar.gz
+Source1:        iodine.service
+Source2:        iodine.conf
+Source3:        iodined.service
+Source4:        iodined.conf
 BuildRequires: zlib-devel
 
 %description
@@ -86,66 +86,63 @@ This package contains some script shared between server and client.
 
 %prep
 %setup -qn %{name}-%{version}%{?beta:-}%{beta}
-%apply_patches
 
 %build
 %make prefix=%{_prefix}
 
-
 %install
-%makeinstall_std prefix=%{_prefix}
-mkdir -p $RPM_BUILD_ROOT/%_initrddir/
-mkdir -p $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/
-install -m 0755 %SOURCE1 $RPM_BUILD_ROOT/%_initrddir/%{name}
-install -m 0755 %SOURCE2 $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/%{name}
-install -m 0755 %SOURCE3 $RPM_BUILD_ROOT/%_initrddir/%{name}d
-install -m 0755 %SOURCE4 $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/%{name}d
+%makeinstall
+mkdir -p %{buildroot}/%{_unitdir}/service
+mkdir -p %{buildroot}/%{_sysconfdir}/sysconfig/
+install -m 0755 %{SOURCE1} %{buildroot}/%{_unitdir}/%{name}.service
+install -m 0755 %{SOURCE2} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+install -m 0755 %{SOURCE3} %{buildroot}/%{_unitdir}/%{name}d.service
+install -m 0755 %{SOURCE4} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}d
 
 # this is a hack so we can bypass ifplugd that try to run dhcp on the 
 # newly created interface
-mkdir -p $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network-scripts
-echo -e '#!/bin/bash\nexit 0\n' > $RPM_BUILD_ROOT/%_sysconfdir/sysconfig/network-scripts/ifup-dns
+mkdir -p %{buildroot}/%{_sysconfdir}/sysconfig/network-scripts
+echo -e '#!/bin/bash\nexit 0\n' > %{buildroot}/%{_sysconfdir}/sysconfig/network-scripts/ifup-dns
 
 %pre server
 %_pre_useradd %{name}d /var/empty /sbin/nologin
 
 %post server
-%_post_service %{name}d
+%systemd_post %{name}d.service
 
 %preun server
-%_preun_service %{name}d
+%systemd_preun %{name}d.service
 
 %postun server
 %_postun_userdel %{name}d
+%systemd_postun_with_restart %{name}d.service
 
 
 %pre client
 %_pre_useradd %{name} /var/empty /sbin/nologin
 
 %post client
-%_post_service %{name}
+%systemd_post %{name}.service
 
 %preun client
-%_preun_service %{name}
+%systemd_preun %{name}.service
 
 %postun client
 %_postun_userdel %{name}
+%systemd_postun_with_restart %{name}.service
 
 %files common
-%defattr(-,root,root)
 %config(noreplace) %attr(0755,root,root) %{_sysconfdir}/sysconfig/network-scripts/ifup-dns
 
 %files server
-%defattr(-,root,root)
 %doc README 
 %{_sbindir}/%{name}d
-%{_initrddir}/%{name}d
+%{_unitdir}/%{name}d.service
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}d
 
 %files client
-%defattr(-,root,root)
 %doc README 
 %{_sbindir}/%{name}
-%{_initrddir}/%{name}
+%{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%_mandir/man8/%{name}.*
+%{_mandir}/man8/%{name}.*

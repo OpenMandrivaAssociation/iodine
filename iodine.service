@@ -1,0 +1,10 @@
+[Unit]
+Description=Iodine Client
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/iodine
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
