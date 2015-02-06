@@ -6,7 +6,7 @@ Version:        0.6.0
 %if "%beta" != ""
 Release:        0.%{beta}.1
 %else
-Release:        1
+Release:        2
 %endif
 Summary:        Tunnel IP over DNS NULL request
 Group:          Networking/Other
