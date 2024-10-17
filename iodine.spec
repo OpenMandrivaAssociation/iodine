@@ -11,7 +11,7 @@ Release:        2
 Summary:        Tunnel IP over DNS NULL request
 Group:          Networking/Other
 License:        BSD
-URL:            http://code.kryo.se/iodine/
+URL:            https://code.kryo.se/iodine/
 Source0:        http://code.kryo.se/iodine/%{name}-%{version}%{?beta:-}%{beta}.tar.gz
 Source1:        iodine.service
 Source2:        iodine.conf
