@@ -17,6 +17,7 @@ Source1:        iodine.service
 Source2:        iodine.conf
 Source3:        iodined.service
 Source4:        iodined.conf
+BuildRequires:	make
 BuildRequires: zlib-devel
 
 %description
